@@ -5,22 +5,45 @@ Live preview for your Handlebars templates. Extension compiles Handlebars templa
 ## Features
 
 - Live prview for Handlebars templates. Preview updates as you type.
-- Support for fake data. Add file `yourtemplate.handlebars.json` to be a context of the template
+- Support for user-defined data and helper functions
 
-## Example
 
-<img src="https://raw.githubusercontent.com/chaliy/vscode-handlebars-preview/master/docs/usage.gif" alt="demo" style="width:480px;"/>
+## Example 
+Have the following files in the same directory:
 
-## Usage
+test.hbs:
+```handlebars
+{{ capitalize foo }} - {{ duplicate goo }}
+```
+
+test.hbs.json
+```json
+{ 
+  "foo": "bar",
+  "goo": "qes"
+}
+```
+
+test.hbs.js
+```js
+module.exports = [{
+  name: 'capitalize',
+  body: s => s.toUpperCase()
+}, {
+  name: 'duplicate',
+  body: s => `${s}${s}`
+}]
+```
 
 - Use the keybinding 'ctrl+p h'
-- To run from command panel 'ctrl+shift+p' and type "Handlebars: Open Preview"
+- Type "Handlebars: Open Preview" (Given the example files above, the output is: `BAR - qesqes`)
 
 ## Credits
 
 - [Handlebars.js: Minimal Templating on Steroids](http://handlebarsjs.com/)
 - [Handlebars for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=andrejunges.Handlebars)
 - [A HTML previewer for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=tht13.html-preview-vscode)
+- [Original plugin repository](https://github.com/chaliy/vscode-handlebars-preview)
 
 ## License
 
