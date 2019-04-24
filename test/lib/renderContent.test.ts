@@ -1,22 +1,21 @@
 import * as assert from "assert";
 import { join } from "path";
-import { TextDocument } from "vscode";
-import renderContent, { HelperFunctionInfo } from "../../src/lib/renderContent";
+import { renderTemplate, HelperFunction } from '../../src/extension';
 
 
 suite("lib/renderContent", () => {
   test("render something simple", () => {
-    const html = renderContent("Hello <b>World!</b>", null, []);
+    const html = renderTemplate("Hello <b>World!</b>", { data: {}, helperFns: [] });
     assert.equal(html, "Hello <b>World!</b>");
   });
 
   test("render with context", () => {
     console.log(join(__dirname, "../examples/simple.handlebars"));
-    const html = renderContent("Super {{foo}}!", "{ \"foo\": \"bar\" }", []);
+    const html = renderTemplate("Super {{foo}}!", { data: { foo: "bar" }, helperFns: [] });
     assert.equal(html, "Super bar!");
   });
 
-  const helperFunctionInfos: HelperFunctionInfo[] = [{
+  const helperFns: HelperFunction[] = [{
     name: 'capitalize',
     body: (s: string) => s.toUpperCase()
   }, {
@@ -25,12 +24,12 @@ suite("lib/renderContent", () => {
   }];
 
   test("render with a helper function", () => {
-    const html = renderContent('SUPER {{capitalize foo}}!', '{ "foo": "bar" }', helperFunctionInfos);
+    const html = renderTemplate('SUPER {{capitalize foo}}!', { data: { "foo": "bar" }, helperFns });
     assert.equal(html, "SUPER BAR!");
   });
 
   test("render with nested helper functions", () => {
-    const html = renderContent('SUPER {{capitalize (ask foo)}}!', '{ "foo": "bar" }', helperFunctionInfos);
+    const html = renderTemplate('SUPER {{capitalize (ask foo)}}!', { data: { "foo": "bar" }, helperFns });
     assert.equal(html, "SUPER BAR???!");
   });
 });
