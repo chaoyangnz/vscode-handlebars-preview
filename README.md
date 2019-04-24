@@ -1,16 +1,35 @@
 # Handlebars Preview for Visual Studio Code
+Live preview for your Handlebars templates (supports a user-defined context data and helper functions)
 
-Live preview for your Handlebars templates. Extension compiles Handlebars template on the fly, apply preview data and render resulting HTML in separate window.
+Upcoming release:
+* Extension compiles Handlebars template on the fly
 
-## Features
+## Example (Reference context source from within the handlebars template)
+NOTE: the context source file path is relative
+test.hbs:
+```handlebars
+{{!-- vscode-handlebars-preview-context-source=./source.js --}}
+{{ capitalize foo }} - {{ duplicate goo }}
+```
+source.js
+```js
+module.exports = {
+  data: {
+    foo: 'bar',
+    goo: 'qes'
+  },
+  helperFns: [{
+    name: 'capitalize',
+    body: s => s.toUpperCase()
+  }, {
+    name: 'duplicate',
+    body: s => `${s}${s}`
+  }]
+}
+```
 
-- Live prview for Handlebars templates. Preview updates as you type.
-- Support for user-defined data and helper functions
-
-
-## Example 
-Have the following files in the same directory:
-
+## Example (Separate data vs helper functions sources)
+In the same directory:
 test.hbs:
 ```handlebars
 {{ capitalize foo }} - {{ duplicate goo }}
