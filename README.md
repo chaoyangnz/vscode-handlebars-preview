@@ -6,6 +6,7 @@ Upcoming release:
 
 ## Example (Reference context source from within the handlebars template)
 NOTE: the context source file path is relative
+
 test.hbs:
 ```handlebars
 {{!-- vscode-handlebars-preview-context-source=./source.js --}}
@@ -30,6 +31,7 @@ module.exports = {
 
 ## Example (Separate data vs helper functions sources)
 In the same directory:
+
 test.hbs:
 ```handlebars
 {{ capitalize foo }} - {{ duplicate goo }}
