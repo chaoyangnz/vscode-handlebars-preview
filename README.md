@@ -2,12 +2,12 @@
 Live preview for your Handlebars templates (supports a user-defined context data and helper functions)
 
 Upcoming release:
-* Extension compiles Handlebars template on the fly
+* Change output upon source file update
 
 ## Example (Reference context source from within the handlebars template)
 NOTE: the context source file path is relative
 
-test.hbs:
+test.hbs
 ```handlebars
 {{!-- vscode-handlebars-preview-context-source=./source.js --}}
 {{ capitalize foo }} - {{ duplicate goo }}
@@ -32,7 +32,7 @@ module.exports = {
 ## Example (Separate data vs helper functions sources)
 In the same directory:
 
-test.hbs:
+test.hbs
 ```handlebars
 {{ capitalize foo }} - {{ duplicate goo }}
 ```

@@ -21,10 +21,11 @@
   ],
   "keywords": [
     "Handlebars",
-    "Live Preview"
+    "Live preview",
+    "Helper functions"
   ],
   "activationEvents": [
-    "onCommand:handlebarsPreview.preview"
+    "onLanguage:handlebars"
   ],
   "main": "./out/src/extension",
   "contributes": {
