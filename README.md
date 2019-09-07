@@ -1,8 +1,5 @@
 # Handlebars Preview for Visual Studio Code
-Live preview for your Handlebars templates (supports a user-defined context data and helper functions)
-
-Upcoming release:
-* Change output upon source file update
+Live preview for your Handlebars templates (supports a user-defined context data and helper functions). Automatic reloading upon input change supported
 
 ## Example (Reference context source from within the handlebars template)
 NOTE: the context source file path is relative

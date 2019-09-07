@@ -2,7 +2,7 @@
   "name": "handlebars-preview-with-function-support",
   "displayName": "Handlebars Preview with helper functions support",
   "description": "Live preview for Handlebar templates (with support for helper functions)",
-  "version": "2.0.8",
+  "version": "2.1.0",
   "publisher": "anonimitoraf",
   "engines": {
     "vscode": "^1.5.0"

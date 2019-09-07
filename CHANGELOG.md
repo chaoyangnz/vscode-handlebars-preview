@@ -1,5 +1,8 @@
 # Change Log
 
+## [2.1.0] - 2019-08-07
+- Automatic preview update upon input change
+
 ## [1.3.0] - 2019-03-08
 - Update CHANGELOG, README, etc.
 
