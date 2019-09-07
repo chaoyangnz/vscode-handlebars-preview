@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { commands, ExtensionContext, ViewColumn, window, workspace, TextDocument, TextEditor } from 'vscode';
+import { commands, ExtensionContext, ViewColumn, window, TextDocument, TextEditor, WebviewPanel } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Handlebars from 'handlebars';
@@ -10,16 +10,13 @@ export function activate(context: ExtensionContext) {
     // Commands
     commands.registerCommand('handlebarsPreview.preview', () => {
       const panel = window.createWebviewPanel("preview", "Handlebars HTML Preview", ViewColumn.Two, {})
-
-      panel.webview.html = makeWebviewContent(window.activeTextEditor);
+      updatePanelWebview(panel);
 
       // Re-render webview if doc changes
-      onDocContentChange(() => window.activeTextEditor && window.activeTextEditor.document,
-        () => panel.webview.html = makeWebviewContent(window.activeTextEditor));
+      vscode.workspace.onDidSaveTextDocument(() => updatePanelWebview(panel));
       
       // Re-render webview if selected editor changes
-      onSelectedEditorChange(() => window.activeTextEditor,
-        () => panel.webview.html = makeWebviewContent(window.activeTextEditor));
+      window.onDidChangeActiveTextEditor(() => updatePanelWebview(panel));
     })
   );
 }
@@ -31,6 +28,10 @@ export interface HelperFunction {
 export interface Context {
   data: object;
   helperFns: HelperFunction[];
+}
+
+function updatePanelWebview(panel: WebviewPanel) {
+  panel.webview.html = makeWebviewContent(window.activeTextEditor);
 }
 
 function makeWebviewContent(maybeActiveEditor: TextEditor | undefined): string {
@@ -101,14 +102,6 @@ function makeWebviewBody(activeDocument: TextDocument): string {
   } catch (e) {
     return `Error to do with handlebars compilation: ${e}`;
   }
-}
-
-function onDocContentChange(getTargetDoc: () => TextDocument | undefined, cb: () => void) {
-  vscode.workspace.onDidSaveTextDocument(doc => doc === getTargetDoc() && cb());
-}
-
-function onSelectedEditorChange(getTargetEditor: () => TextEditor | undefined, cb: () => void) {
-  window.onDidChangeActiveTextEditor(editor => editor === getTargetEditor() && cb());
 }
 
 export function renderTemplate(template: string, context: Context) {
