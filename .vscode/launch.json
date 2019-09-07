@@ -9,8 +9,7 @@
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
             "stopOnEntry": false,
             "sourceMaps": true,
-            "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ],
-            "preLaunchTask": "tsc build"
+            "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ]
         },
         {
             "name": "Launch Tests",
