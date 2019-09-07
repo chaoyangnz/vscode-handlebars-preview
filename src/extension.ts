@@ -58,15 +58,15 @@ function getWebviewBody(): string {
     const dataFilePath = `${currentActiveFile.fileName}.json`;
     const helperFnsFilePath = `${currentActiveFile.fileName}.js`;
 
-    const data = fs.existsSync(dataFilePath)
-      ? JSON.parse(fs.readFileSync(dataFilePath, 'utf8'))
-      : {};
-
-    const helperFns = fs.existsSync(helperFnsFilePath)
-      ? requireUncached(helperFnsFilePath)
-      : [];
-
     try {
+      const data = fs.existsSync(dataFilePath)
+        ? JSON.parse(fs.readFileSync(dataFilePath, 'utf8'))
+        : {};
+
+      const helperFns = fs.existsSync(helperFnsFilePath)
+        ? requireUncached(helperFnsFilePath)
+        : [];
+
       context = { data, helperFns }
     } catch (e) {
       return `Error parsing data and/or helper functions source file: ${e}`;
