@@ -1,4 +1,5 @@
-import { commands, ExtensionContext, ViewColumn, window, workspace, TextDocument } from 'vscode';
+import * as vscode from 'vscode';
+import { commands, ExtensionContext, ViewColumn, window, workspace, TextDocument, TextEditor } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Handlebars from 'handlebars';
@@ -9,7 +10,16 @@ export function activate(context: ExtensionContext) {
     // Commands
     commands.registerCommand('handlebarsPreview.preview', () => {
       const panel = window.createWebviewPanel("preview", "Handlebars HTML Preview", ViewColumn.Two, {})
-      panel.webview.html = getWebviewContent();
+
+      panel.webview.html = makeWebviewContent(window.activeTextEditor);
+
+      // Re-render webview if doc changes
+      onDocContentChange(() => window.activeTextEditor && window.activeTextEditor.document,
+        () => panel.webview.html = makeWebviewContent(window.activeTextEditor));
+      
+      // Re-render webview if selected editor changes
+      onSelectedEditorChange(() => window.activeTextEditor,
+        () => panel.webview.html = makeWebviewContent(window.activeTextEditor));
     })
   );
 }
@@ -23,28 +33,26 @@ export interface Context {
   helperFns: HelperFunction[];
 }
 
-function getWebviewContent(): string {
+function makeWebviewContent(maybeActiveEditor: TextEditor | undefined): string {
+  const webviewBody = !maybeActiveEditor
+    ? 'Select handlebars file to render'
+    : makeWebviewBody(maybeActiveEditor.document);
+
   return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handlebars HTML Preview</title>
-</head>
-<body>
-  ${getWebviewBody()}
-</body>
-</html>`;
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Handlebars HTML Preview</title>
+    </head>
+    <body>
+      ${webviewBody}
+    </body>
+    </html>`;
 }
 
-function getWebviewBody(): string {
-  const { activeTextEditor } = window;
-  if (!activeTextEditor || !activeTextEditor.document) {
-    return 'Select handlebars file to render';
-  }
-
-  const { document: currentActiveFile } = activeTextEditor;
-  const ctxResolution = specifiedContext(activeTextEditor.document);
+function makeWebviewBody(activeDocument: TextDocument): string {
+  const ctxResolution = specifiedContext(activeDocument);
 
   if (ctxResolution.error !== undefined) {
     return ctxResolution.error;
@@ -55,8 +63,8 @@ function getWebviewBody(): string {
     context = ctxResolution.context;
   } else {
     // Go with the old format which is: look for *.hbs.json and *.hbs.js
-    const dataFilePath = `${currentActiveFile.fileName}.json`;
-    const helperFnsFilePath = `${currentActiveFile.fileName}.js`;
+    const dataFilePath = `${activeDocument.fileName}.json`;
+    const helperFnsFilePath = `${activeDocument.fileName}.js`;
 
     try {
       const data = fs.existsSync(dataFilePath)
@@ -74,7 +82,7 @@ function getWebviewBody(): string {
   }
 
   try {
-    const templateContent = currentActiveFile.getText();
+    const templateContent = activeDocument.getText();
     const renderedTemplate = renderTemplate(templateContent, context);
 
     return `
@@ -93,6 +101,14 @@ function getWebviewBody(): string {
   } catch (e) {
     return `Error to do with handlebars compilation: ${e}`;
   }
+}
+
+function onDocContentChange(getTargetDoc: () => TextDocument | undefined, cb: () => void) {
+  vscode.workspace.onDidSaveTextDocument(doc => doc === getTargetDoc() && cb());
+}
+
+function onSelectedEditorChange(getTargetEditor: () => TextEditor | undefined, cb: () => void) {
+  window.onDidChangeActiveTextEditor(editor => editor === getTargetEditor() && cb());
 }
 
 export function renderTemplate(template: string, context: Context) {
