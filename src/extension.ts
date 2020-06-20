@@ -1,22 +1,46 @@
 import * as vscode from 'vscode';
-import { commands, ExtensionContext, ViewColumn, window, TextDocument, TextEditor, WebviewPanel } from 'vscode';
+import { commands, ExtensionContext, ViewColumn, window, workspace, TextDocument, TextEditor, WebviewPanel } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Handlebars from 'handlebars';
-import *  as os from 'os';
 
 export function activate(context: ExtensionContext) {
+  const outputChannel = window.createOutputChannel('Handlebars Preview');
+  const config = workspace.getConfiguration('handlebarsPreview');
+
   context.subscriptions.push(
     // Commands
     commands.registerCommand('handlebarsPreview.preview', () => {
+
+      const fileExtensionsToPreview = config.get<string[] | undefined>('fileExtensionsToPreview');
+      const isARelevantFile = (fileName: string) =>
+        // If not specified, any selected file will be previewed regardless of its extension.
+        (!fileExtensionsToPreview || fileExtensionsToPreview.some(ext => path.extname(fileName) === ext));
+
       const panel = window.createWebviewPanel("preview", "Handlebars HTML Preview", ViewColumn.Two, {})
       updatePanelWebview(panel);
 
       // Re-render webview if doc changes
-      vscode.workspace.onDidSaveTextDocument(() => updatePanelWebview(panel));
-      
+      workspace.onDidSaveTextDocument(e => {
+        const fileName = e.fileName;
+        outputChannel.appendLine('name of file that was just saved:' + fileName);
+        outputChannel.appendLine('extensions to trigger preview:' + fileExtensionsToPreview?.join(', '));
+
+        if (isARelevantFile(fileName)) {
+          updatePanelWebview(panel);
+        }
+      });
+
       // Re-render webview if selected editor changes
-      window.onDidChangeActiveTextEditor(() => updatePanelWebview(panel));
+      window.onDidChangeActiveTextEditor(e => {
+        const fileName = e?.document.fileName;
+        outputChannel.appendLine('current file name:' + fileName);
+        outputChannel.appendLine('extensions to trigger preview:' + fileExtensionsToPreview?.join(', '));
+
+        if (fileName && isARelevantFile(fileName)) {
+          updatePanelWebview(panel);
+        }
+      });
     })
   );
 }
@@ -91,10 +115,12 @@ function makeWebviewBody(activeDocument: TextDocument): string {
     <br/>
     ${renderedTemplate}
     <br/>
+    <div>-----------------------------------------------------------------</div>
     <br/>
     data:
     <pre>${JSON.stringify(context.data, null, 2)}</pre>
     <br/>
+    <div>-----------------------------------------------------------------</div>
     <br/>
     helper functions: 
     <pre>${JSON.stringify(context.helperFns.map(fn => ({ ...fn, body: fn.body.toString() })), null, 2)}</pre>
