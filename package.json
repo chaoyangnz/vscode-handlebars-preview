@@ -5,7 +5,7 @@
   "version": "2.1.0",
   "publisher": "anonimitoraf",
   "engines": {
-    "vscode": "^1.37.1"
+    "vscode": "^1.46.1"
   },
   "icon": "icon.png",
   "repository": {
@@ -29,6 +29,18 @@
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "configuration": {
+      "title": "Handlebars Preview",
+      "properties": {
+        "handlebarsPreview.fileExtensionsToPreview": {
+          "type": "array",
+          "default": [
+            ".hbs"
+          ],
+          "description": "A preview only gets shown/updated if the currently selected file's extension is in this list"
+        }
+      }
+    },
     "commands": [
       {
         "command": "handlebarsPreview.preview",
@@ -51,11 +63,11 @@
   "devDependencies": {
     "@types/mocha": "^2.2.32",
     "@types/node": "^11.13.7",
-    "@types/vscode": "^1.33.0",
+    "@types/vscode": "^1.46.0",
     "copyfiles": "^1.2.0",
     "mocha": "^2.3.3",
-    "typescript": "^3.4.4",
-    "vscode": "^1.1.33"
+    "typescript": "^3.9.5",
+    "vscode": "^1.1.37"
   },
   "dependencies": {
     "handlebars": "^4.0.6"
