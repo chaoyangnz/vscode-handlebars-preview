@@ -3,6 +3,22 @@ import { commands, ExtensionContext, ViewColumn, window, workspace, TextDocument
 import * as fs from 'fs';
 import * as path from 'path';
 import * as Handlebars from 'handlebars';
+import * as HandlebarsUtils from 'handlebars-utils'
+import * as helperDate from 'helper-date'
+
+// Siteminder emailx template helpers
+// https://github.com/siteminder-au/emailx/blob/master/components/api/src/app/services/templates/render.ts#L11-L24
+Handlebars.registerHelper('date', helperDate)
+Handlebars.registerHelper('eq', function (a, b, options) {
+  if (arguments.length === 2) {
+    // eslint-disable-next-line
+    options = b
+    // eslint-disable-next-line
+    b = options.hash.compare
+  }
+  // @ts-ignore
+  return HandlebarsUtils.value(a === b, this, options)
+})
 
 export function activate(context: ExtensionContext) {
   const outputChannel = window.createOutputChannel('Handlebars Preview');

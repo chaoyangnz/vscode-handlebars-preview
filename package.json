@@ -1,16 +1,16 @@
 {
-  "name": "handlebars-preview-with-function-support",
+  "name": "handlebars-preview-helper-support",
   "displayName": "Handlebars Preview with helper functions support",
   "description": "Live preview for Handlebar templates (with support for helper functions)",
-  "version": "2.1.0",
-  "publisher": "anonimitoraf",
+  "version": "3.0.0",
+  "publisher": "chaoyangnz",
   "engines": {
     "vscode": "^1.46.1"
   },
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anonimitoraf/vscode-handlebars-preview"
+    "url": "https://github.com/chaoyangnz/vscode-handlebars-preview"
   },
   "galleryBanner": {
     "color": "#0F6378",
@@ -35,7 +35,8 @@
         "handlebarsPreview.fileExtensionsToPreview": {
           "type": "array",
           "default": [
-            ".hbs"
+            ".hbs",
+            ".html"
           ],
           "description": "A preview only gets shown/updated if the currently selected file's extension is in this list"
         }
@@ -56,8 +57,11 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "tsc",
-    "postinstall": "node ./node_modules/vscode/bin/install",
+    "lint": "eslint src --ext ts",
+    "publish": "vsce publish",
+    "package": "npm run build && vsce package",
+    "build": "tsc",
+    "vscode:install": "npm run package && code --install-extension ./handlebars-preview-helper-support-3.0.0.vsix",
     "test": "tsc && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
@@ -67,9 +71,12 @@
     "copyfiles": "^1.2.0",
     "mocha": "^2.3.3",
     "typescript": "^3.9.5",
+    "vsce": "^2.15.0",
     "vscode": "^1.1.37"
   },
   "dependencies": {
-    "handlebars": "^4.0.6"
+    "handlebars": "^4.0.6",
+    "handlebars-utils": "^1.0.6",
+    "helper-date": "^1.0.1"
   }
 }
